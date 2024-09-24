@@ -1,0 +1,16 @@
+[package]
+name = "ApptoS"
+version = "1.0.0"
+authors = []
+
+[addresses]
+app_to_s = "0xb3756ad4395b5391766fa5ff9260085996e18a2b0daa1ef1be37ea54272091ff"
+
+[dev-addresses]
+
+[dependencies.AptosFramework]
+git = "https://github.com/aptos-labs/aptos-core.git"
+rev = "mainnet"
+subdir = "aptos-move/framework/aptos-framework"
+
+[dev-dependencies]
