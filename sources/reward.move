@@ -181,6 +181,14 @@ module app_to_s::reward {
     consumer_obj.free_trial_count = 5;
   }
 
+  entry fun use_free_trial(caller: &signer, consumer_obj_addr: address) acquires Consumer {
+    let caller_address = signer::address_of(caller);
+    assert!(caller_address == MODULE_OWNER, 0);
+
+    let consumer_obj = borrow_global_mut<Consumer>(consumer_obj_addr);
+    consumer_obj.free_trial_count = consumer_obj.free_trial_count - 1;
+  }
+
   #[view]
   public fun get_free_trial_count(consumer_obj_addr: address):u64 acquires Consumer {
     let consumer_obj = borrow_global_mut<Consumer>(consumer_obj_addr);
