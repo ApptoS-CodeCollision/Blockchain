@@ -76,6 +76,16 @@ module app_to_s::reward {
     );
   }
 
+  // ENTRY STORE PROMPT DATA
+  entry fun store_rag_data(caller: &signer, creator_address: address, ai_id: String, prompt: String) acquires Creator {
+    let caller_address = signer::address_of(caller);
+    assert!(caller_address == MODULE_OWNER, 0);
+
+    let creator_obj = borrow_global_mut<Creator>(creator_address);
+    let ai = table::borrow_mut<String, AI>(&mut creator_obj.ai_table, ai_id);
+    vector::push_back(&mut ai.rags, RAG{prompt: prompt});
+  }
+
   // ENTRY REQUEST FAUCET
   entry fun request_faucet(caller: &signer, consumer_addr: address) acquires Consumer {
     let caller_address = signer::address_of(caller);
