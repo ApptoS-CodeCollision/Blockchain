@@ -133,6 +133,13 @@ module app_to_s::reward {
   }
 
   #[view]
+  public fun get_number_of_rags(creator_address: address, ai_id: String) :u64 acquires Creator {
+    let creator_obj = borrow_global<Creator>(creator_address);
+    let ai = table::borrow<String, AI>(&creator_obj.ai_table, ai_id);
+    vector::length(&ai.rags)
+  }
+
+  #[view]
   public fun get_ai_total_colleted_rewards(creator_address: address, ai_id: String) : u64 acquires Creator {
     let creator_obj = borrow_global<Creator>(creator_address);
     let ai = table::borrow<String, AI>(&creator_obj.ai_table, ai_id);
