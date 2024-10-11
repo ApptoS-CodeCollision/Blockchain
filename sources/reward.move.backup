@@ -32,6 +32,7 @@ module app_to_s::reward {
     balance: u64,
   }
 
+  // DONE DONE
   // ENTRY REGISTER USER
   entry fun register_user(caller: &signer, user_addr: address) {
     let caller_address = signer::address_of(caller);
@@ -41,6 +42,7 @@ module app_to_s::reward {
     new_consumer_and_transfer(caller, user_addr);
   }
 
+  // DONE DONE
   fun new_creator_and_transfer(caller: &signer, user_addr: address) {
     let caller_address = signer::address_of(caller);
 
@@ -59,6 +61,7 @@ module app_to_s::reward {
     object::transfer(caller, object, user_addr);
   }
 
+  // DONE DONE
   fun new_consumer_and_transfer(caller: &signer, user_addr: address) {
     let caller_address = signer::address_of(caller);
 
@@ -87,6 +90,7 @@ module app_to_s::reward {
     exists<Consumer>(ob_addr)
   }
   
+  // DONE DONE
   // ENTRY REGISTER AI
   entry fun register_ai(caller: &signer, creator_addr: address, creator_obj_address: address, ai_id: String, rag_hash: String) acquires Creator {
     let caller_address = signer::address_of(caller);
@@ -111,6 +115,7 @@ module app_to_s::reward {
     table::contains<String, AI>(&creator_obj.ai_table, ai_id)
   }
 
+  // DONE DONE
   // ENTRY STORE VECTOR DATA
   entry fun store_rag_hash_data(caller: &signer, creator_addr: address, creator_obj_addr: address, ai_id: String, rag_hash: String) acquires Creator {
     let caller_address = signer::address_of(caller);
@@ -121,6 +126,7 @@ module app_to_s::reward {
     vector::push_back(&mut ai.rags, RAG{hash: rag_hash});
   }
 
+  // NO NEED
   // user call from FE 
   // ENTRY RECHARGE CONSUMER BALANCE
   entry fun recharge_consumer_balance(caller: &signer, consumer_obj_addr: address) acquires Consumer {
@@ -139,6 +145,7 @@ module app_to_s::reward {
     consumer_obj.balance
   }
 
+  // DONE DONE
   // ENTRY PAY FOR USAGE
   entry fun pay_for_usage(caller: &signer, creator_obj_addr: address, ai_id: String, consumer_obj_addr: address, amount: u64) acquires Creator, Consumer {
     let caller_address = signer::address_of(caller);
@@ -159,6 +166,7 @@ module app_to_s::reward {
     ai.collectingRewards
   }
 
+  // NO NEED
   // ENTRY CLAIM REWARDS
   entry fun claim_rewards_by_ai(caller: &signer, creator_addr: address, creator_obj_addr: address, ai_id: String) acquires Creator {
     let caller_address = signer::address_of(caller);
@@ -171,6 +179,7 @@ module app_to_s::reward {
 
   }
 
+  // DONE DONE
   // ENTRY REQUEST FAUCET
   entry fun request_faucet(caller: &signer, consumer_obj_addr: address) acquires Consumer {
     let caller_address = signer::address_of(caller);
@@ -181,6 +190,7 @@ module app_to_s::reward {
     consumer_obj.free_trial_count = 5;
   }
 
+  // DONE DONE
   entry fun use_free_trial(caller: &signer, consumer_obj_addr: address) acquires Consumer {
     let caller_address = signer::address_of(caller);
     assert!(caller_address == MODULE_OWNER, 0);

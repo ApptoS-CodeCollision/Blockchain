@@ -95,6 +95,15 @@ module app_to_s::reward {
     assert!(consumer_obj.free_trial_count == 0, 10);
     consumer_obj.free_trial_count = 5;
   }
+  
+  // ENTRY USE FREE TRIAL
+  entry fun use_free_trial(caller: &signer, consumer_address: address) acquires Consumer {
+    let caller_address = signer::address_of(caller);
+    assert!(caller_address == MODULE_OWNER, 0);
+
+    let consumer_obj = borrow_global_mut<Consumer>(consumer_address);
+    consumer_obj.free_trial_count = consumer_obj.free_trial_count - 1;
+  }
 
   // ENTRY PAY FOR USAGE
   entry fun pay_for_chat(caller: &signer, creator_address: address, ai_id: String, amount: u64) acquires Creator{
