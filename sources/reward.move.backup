@@ -80,11 +80,14 @@ module app_to_s::reward {
     );
     object::transfer(caller, object, user_addr);
   }
+  
+  // DONE DONE
   #[view]
   public fun exists_creator_at(obj_addr: address): bool {
     exists<Creator>(obj_addr)
   }
 
+  // DONE DONE
   #[view]
   public fun exists_consumer_at(ob_addr: address): bool {
     exists<Consumer>(ob_addr)
@@ -109,6 +112,7 @@ module app_to_s::reward {
     );
   }
 
+  // DONE DONE
   #[view]
   public fun contain_ai(creator_obj_addr: address, ai_id: String) :bool acquires Creator {
     let creator_obj = borrow_global<Creator>(creator_obj_addr);
@@ -139,6 +143,7 @@ module app_to_s::reward {
     coin::transfer<AptosCoin>(caller, @app_to_s, amount);
   }
 
+  // NO NEED
   #[view]
   public fun get_consumer_balance(consumer_obj_addr: address) :u64 acquires Consumer {
     let consumer_obj = borrow_global<Consumer>(consumer_obj_addr);
@@ -159,6 +164,7 @@ module app_to_s::reward {
     consumer_obj.balance = consumer_obj.balance - amount;
   }
 
+  // DONE DONE
   #[view]
   public fun get_ai_rewards(creator_obj_addr: address, ai_id: String) : u64 acquires Creator {
     let creator_obj = borrow_global<Creator>(creator_obj_addr);
@@ -199,6 +205,7 @@ module app_to_s::reward {
     consumer_obj.free_trial_count = consumer_obj.free_trial_count - 1;
   }
 
+  // DONE DONE
   #[view]
   public fun get_free_trial_count(consumer_obj_addr: address):u64 acquires Consumer {
     let consumer_obj = borrow_global_mut<Consumer>(consumer_obj_addr);

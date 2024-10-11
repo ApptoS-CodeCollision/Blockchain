@@ -115,4 +115,33 @@ module app_to_s::reward {
 
     coin::transfer<AptosCoin>(caller, creator_address, amount);
   }
+
+  #[view]
+  public fun exists_creator_at(user_address: address): bool {
+    exists<Creator>(user_address)
+  }
+
+  #[view]
+  public fun exists_consumer_at(user_address: address): bool {
+    exists<Consumer>(user_address)
+  }
+
+  #[view]
+  public fun contain_ai(creator_address: address, ai_id: String) :bool acquires Creator {
+    let creator_obj = borrow_global<Creator>(creator_address);
+    table::contains<String, AI>(&creator_obj.ai_table, ai_id)
+  }
+
+  #[view]
+  public fun get_ai_total_colleted_rewards(creator_address: address, ai_id: String) : u64 acquires Creator {
+    let creator_obj = borrow_global<Creator>(creator_address);
+    let ai = table::borrow<String, AI>(&creator_obj.ai_table, ai_id);
+    ai.totalCollectedRewards
+  }
+
+  #[view]
+  public fun get_free_trial_count(consumer_address: address):u64 acquires Consumer {
+    let consumer_obj = borrow_global_mut<Consumer>(consumer_address);
+    consumer_obj.free_trial_count
+  }
 }
