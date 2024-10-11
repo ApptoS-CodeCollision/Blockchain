@@ -18,7 +18,7 @@ module app_to_s::reward {
   struct AI has key, store {
     owner: address,
     id: String,
-    collectingRewards: u64,
+    totalCollectedRewards: u64,
     rags: vector<RAG>,
   }
 
@@ -29,7 +29,7 @@ module app_to_s::reward {
   struct Consumer has key {
     owner: address,
     free_trial_count: u64,
-    balance: u64,
+    // balance: u64,
   }
 
   // ENTRY REGISTER USER
@@ -54,7 +54,7 @@ module app_to_s::reward {
     move_to(caller, Consumer {
       owner: caller_address,
       free_trial_count: 0,
-      balance: 0,
+      // balance: 0,
     });
   }
 
@@ -70,7 +70,7 @@ module app_to_s::reward {
       AI {
         owner: creator_address,
         id: ai_id,
-        collectingRewards: 0,
+        totalCollectedRewards: 0,
         rags: vector<RAG>[RAG{prompt: prompt}],
       }
     );
@@ -94,5 +94,16 @@ module app_to_s::reward {
     let consumer_obj = borrow_global_mut<Consumer>(consumer_addr);
     assert!(consumer_obj.free_trial_count == 0, 10);
     consumer_obj.free_trial_count = 5;
+  }
+
+  // ENTRY PAY FOR USAGE
+  entry fun pay_for_chat(caller: &signer, creator_address: address, ai_id: String, amount: u64) acquires Creator{
+    let caller_address = signer::address_of(caller);
+
+    let creator_obj = borrow_global_mut<Creator>(creator_address);
+    let ai = table::borrow_mut<String, AI>(&mut creator_obj.ai_table, ai_id);
+    ai.totalCollectedRewards = ai.totalCollectedRewards + amount;
+
+    coin::transfer<AptosCoin>(caller, creator_address, amount);
   }
 }
