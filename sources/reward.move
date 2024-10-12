@@ -50,7 +50,7 @@ module app_to_s::reward {
     let caller_address = signer::address_of(caller);
     move_to(caller, Consumer {
       owner: caller_address,
-      free_trial_count: 0,
+      free_trial_count: 5,
       balance: 0,
     });
   }
@@ -82,11 +82,13 @@ module app_to_s::reward {
   }
 
   // ENTRY REQUEST FAUCET
-  entry fun request_faucet(caller: &signer, consumer_addr: address) acquires Consumer {
+  entry fun request_faucet(caller: &signer) acquires Consumer {
     let caller_address = signer::address_of(caller);
-    assert!(caller_address == MODULE_OWNER, 0);
 
-    let consumer_obj = borrow_global_mut<Consumer>(consumer_addr);
+    // 블록타임으로 일정 시간 지났을 때야 가능하도록
+    // last facet time 라는 feild가 있어야겠다.
+
+    let consumer_obj = borrow_global_mut<Consumer>(caller_address);
     assert!(consumer_obj.free_trial_count == 0, 10);
     consumer_obj.free_trial_count = 5;
   }
