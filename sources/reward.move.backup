@@ -172,7 +172,7 @@ module app_to_s::reward {
     ai.collectingRewards
   }
 
-  // NO NEED
+  // NO NEED -> DONE DONE
   // ENTRY CLAIM REWARDS
   entry fun claim_rewards_by_ai(caller: &signer, creator_addr: address, creator_obj_addr: address, ai_id: String) acquires Creator {
     let caller_address = signer::address_of(caller);

@@ -122,6 +122,17 @@ module app_to_s::reward {
     consumer_obj.balance = consumer_obj.balance - amount;
   }
 
+  entry fun claim_rewards_by_ai(caller: &signer, creator_address: address, ai_id: String) acquires Creator {
+    let caller_address = signer::address_of(caller);
+    assert!(caller_address == MODULE_OWNER, 0);
+
+    let creator_obj = borrow_global_mut<Creator>(creator_address);
+    let ai = table::borrow_mut<String, AI>(&mut creator_obj.ai_table, ai_id);
+    coin::transfer<AptosCoin>(caller, creator_address, ai.collectingRewards);
+    ai.collectingRewards = 0;
+
+  }
+
   #[view]
   public fun exists_creator_at(user_address: address): bool {
     exists<Creator>(user_address)
