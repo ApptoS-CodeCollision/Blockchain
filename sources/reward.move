@@ -9,6 +9,11 @@ module app_to_s::reward {
    /// Address of the owner of this module
   const MODULE_OWNER: address = @app_to_s;
 
+  struct Admin has key {
+    owner : address,
+    balance : u64,
+  }
+
   struct Creator has key{
     owner: address,
     ai_table: Table<String, AI>,
@@ -29,6 +34,16 @@ module app_to_s::reward {
     owner: address,
     free_trial_count: u64,
     balance: u64,
+  }
+
+  fun init_module(caller: &signer) {
+    let caller_address = signer::address_of(caller);
+
+    move_to(caller, Admin {
+      owner: caller_address,
+      balance: 0
+    });
+
   }
 
   // ENTRY REGISTER USER
@@ -85,9 +100,6 @@ module app_to_s::reward {
   entry fun request_faucet(caller: &signer) acquires Consumer {
     let caller_address = signer::address_of(caller);
 
-    // 블록타임으로 일정 시간 지났을 때야 가능하도록
-    // last facet time 라는 feild가 있어야겠다.
-
     let consumer_obj = borrow_global_mut<Consumer>(caller_address);
     assert!(consumer_obj.free_trial_count == 0, 10);
     consumer_obj.free_trial_count = 5;
@@ -112,16 +124,23 @@ module app_to_s::reward {
   }
 
   // ENTRY PAY FOR USAGE
-  entry fun pay_for_chat(caller: &signer, creator_address: address, consumer_address: address, ai_id: String, amount: u64) acquires Creator, Consumer{
+  entry fun pay_for_chat(caller: &signer, creator_address: address, consumer_address: address, ai_id: String, used_token: u64) acquires Admin, Creator, Consumer{
     let caller_address = signer::address_of(caller);
     assert!(caller_address == MODULE_OWNER, 0);
 
+    let admin_reward = used_token * 175;
+    let creator_reward = used_token * 25;
+    let total_reward = admin_reward + creator_reward;
+
+    let admin_obj = borrow_global_mut<Admin>(caller_address);
+    admin_obj.balance = admin_obj.balance + admin_reward;
+
     let creator_obj = borrow_global_mut<Creator>(creator_address);
     let ai = table::borrow_mut<String, AI>(&mut creator_obj.ai_table, ai_id);
-    ai.collectingRewards = ai.collectingRewards + amount;
+    ai.collectingRewards = ai.collectingRewards + creator_reward;
 
     let consumer_obj = borrow_global_mut<Consumer>(consumer_address);
-    consumer_obj.balance = consumer_obj.balance - amount;
+    consumer_obj.balance = consumer_obj.balance - total_reward;
   }
 
   entry fun claim_rewards_by_ai(caller: &signer, creator_address: address, ai_id: String) acquires Creator {
@@ -130,9 +149,9 @@ module app_to_s::reward {
 
     let creator_obj = borrow_global_mut<Creator>(creator_address);
     let ai = table::borrow_mut<String, AI>(&mut creator_obj.ai_table, ai_id);
+
     coin::transfer<AptosCoin>(caller, creator_address, ai.collectingRewards);
     ai.collectingRewards = 0;
-
   }
 
   #[view]
