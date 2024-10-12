@@ -130,7 +130,7 @@ module app_to_s::reward {
     vector::push_back(&mut ai.rags, RAG{hash: rag_hash});
   }
 
-  // NO NEED
+  // NO NEED -> DONE DONE
   // user call from FE 
   // ENTRY RECHARGE CONSUMER BALANCE
   entry fun recharge_consumer_balance(caller: &signer, consumer_obj_addr: address) acquires Consumer {
@@ -143,7 +143,7 @@ module app_to_s::reward {
     coin::transfer<AptosCoin>(caller, @app_to_s, amount);
   }
 
-  // NO NEED
+  // NO NEED -> DONE DONE
   #[view]
   public fun get_consumer_balance(consumer_obj_addr: address) :u64 acquires Consumer {
     let consumer_obj = borrow_global<Consumer>(consumer_obj_addr);
