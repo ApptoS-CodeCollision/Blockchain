@@ -5,6 +5,7 @@ authors = []
 
 [addresses]
 app_to_s = "_"
+admin = "0xb5726df23780447b1b0892f971695fd9accb67a732b0bfbeb546df3a916dad48"
 
 [dev-addresses]
 

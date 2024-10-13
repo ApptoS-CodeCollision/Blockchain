@@ -8,6 +8,7 @@ module app_to_s::reward {
 
    /// Address of the owner of this module
   const MODULE_OWNER: address = @app_to_s;
+  const ADMIN_ADDRESS: address = @admin;
 
   struct Admin has key {
     owner : address,
@@ -36,14 +37,14 @@ module app_to_s::reward {
     balance: u64,
   }
 
-  fun init_module(caller: &signer) {
+  entry fun register_admin(caller: &signer) {
     let caller_address = signer::address_of(caller);
+    assert!(caller_address == ADMIN_ADDRESS, 0);
 
     move_to(caller, Admin {
       owner: caller_address,
       balance: 0
     });
-
   }
 
   // ENTRY REGISTER USER
@@ -143,7 +144,8 @@ module app_to_s::reward {
     consumer_obj.balance = consumer_obj.balance - total_reward;
   }
 
-  entry fun claim_rewards_by_ai(caller: &signer, creator_address: address, ai_id: String) acquires Creator {
+  // creator
+  entry fun claim_ai_rewards_by_creator(caller: &signer, creator_address: address, ai_id: String) acquires Creator {
     let caller_address = signer::address_of(caller);
     assert!(caller_address == MODULE_OWNER, 0);
 
@@ -153,6 +155,19 @@ module app_to_s::reward {
     coin::transfer<AptosCoin>(caller, creator_address, ai.collectingRewards);
     ai.collectingRewards = 0;
   }
+
+  // admin
+  entry fun claim_admin_rewards(caller: &signer, admin_address: address) acquires Admin {
+    let caller_address = signer::address_of(caller);
+    assert!(caller_address == MODULE_OWNER, 0);
+    assert!(admin_address == ADMIN_ADDRESS, 0);
+
+    let admin_obj = borrow_global_mut<Admin>(admin_address);
+
+    coin::transfer<AptosCoin>(caller, admin_address, admin_obj.balance);
+    admin_obj.balance = 0;
+  }
+
 
   #[view]
   public fun exists_creator_at(user_address: address): bool {
