@@ -15,23 +15,23 @@ module app_to_s::reward {
     balance : u64,
   }
 
-  struct Creator has key{
+  struct Creator has key {
     owner: address,
     ai_table: Table<String, AI>,
   }
 
-  struct AI has key, store {
+  struct AI has key, store, drop{
     owner: address,
     id: String,
     collectingRewards: u64,
     rags: vector<RAG>,
   }
 
-  struct RAG has store {
+  struct RAG has store, drop {
     prompt: String,
   }
 
-  struct Consumer has key {
+  struct Consumer has key{
     owner: address,
     free_trial_count: u64,
     balance: u64,
@@ -71,12 +71,36 @@ module app_to_s::reward {
     });
   }
 
+  // ENTRY RESET USER
+  entry fun reset_user(caller: &signer) acquires Consumer {
+    let caller_address = signer::address_of(caller);
+    let consumer_obj = borrow_global_mut<Consumer>(caller_address);
+    consumer_obj.free_trial_count = 5;
+  }
+
   // ENTRY REGISTER AI
   entry fun register_ai(caller: &signer, ai_id: String, prompt: String) acquires Creator {
     let caller_address = signer::address_of(caller);
     let creator_obj = borrow_global_mut<Creator>(caller_address);
 
     table::add<String, AI>(
+      &mut creator_obj.ai_table, 
+      ai_id, 
+      AI {
+        owner: caller_address,
+        id: ai_id,
+        collectingRewards: 0,
+        rags: vector<RAG>[RAG{prompt: prompt}],
+      }
+    );
+  }
+
+  // ENTRY UPDATE AI
+  entry fun update_ai(caller: &signer, ai_id: String, prompt: String) acquires Creator {
+    let caller_address = signer::address_of(caller);
+    let creator_obj = borrow_global_mut<Creator>(caller_address);
+
+    table::upsert<String, AI>(
       &mut creator_obj.ai_table, 
       ai_id, 
       AI {
@@ -167,7 +191,6 @@ module app_to_s::reward {
     coin::transfer<AptosCoin>(caller, admin_address, admin_obj.balance);
     admin_obj.balance = 0;
   }
-
 
   #[view]
   public fun exists_creator_at(user_address: address): bool {
