@@ -157,7 +157,7 @@ module app_to_s::reward {
     let creator_reward = used_token * 25;
     let total_reward = admin_reward + creator_reward;
 
-    let admin_obj = borrow_global_mut<Admin>(caller_address);
+    let admin_obj = borrow_global_mut<Admin>(ADMIN_ADDRESS);
     admin_obj.balance = admin_obj.balance + admin_reward;
 
     let creator_obj = borrow_global_mut<Creator>(creator_address);
